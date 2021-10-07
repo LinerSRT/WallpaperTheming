@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -14,18 +15,27 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.SeekBar;
+import android.widget.Switch;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.ColorUtils;
 import androidx.palette.graphics.Palette;
 
+import com.google.android.material.button.MaterialButton;
+
 import ru.liner.wallpapertheming.utils.Broadcast;
+import ru.liner.wallpapertheming.utils.ColorUtils;
 import ru.liner.wallpapertheming.utils.ImageUtils;
 
 @SuppressWarnings("deprecation")
@@ -48,7 +58,7 @@ public abstract class ThemedActivity extends AppCompatActivity {
         super.onStart();
         themeConfig = getThemeConfig();
         accentAccentColor = themeConfig.getDefaultAccentAccentColor();
-        accentAccentSecondaryColor = ColorUtils.blendARGB(themeConfig.getDefaultAccentAccentColor(), Color.BLACK, 0.2f);
+        accentAccentSecondaryColor = ColorUtils.darkerColor(accentAccentColor, .3f);
         backgroundColor = themeConfig.getDefaultBackgroundColor();
         wallpaperChanged = true;
     }
@@ -88,7 +98,7 @@ public abstract class ThemedActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             palette = Palette.from(ImageUtils.drawableToBitmap(wallpaperManager.getDrawable())).generate();
             accentAccentColor = palette.getVibrantColor(themeConfig.getDefaultAccentAccentColor());
-            accentAccentSecondaryColor = ColorUtils.blendARGB(accentAccentColor, Color.BLACK, 0.2f);
+            accentAccentSecondaryColor = ColorUtils.darkerColor(accentAccentColor, .3f);
             backgroundColor = palette.getDarkMutedColor(themeConfig.getDefaultBackgroundColor());
             if (themeConfig.isAnimateColorChanges()) {
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), Color.WHITE, accentAccentColor);
@@ -125,10 +135,52 @@ public abstract class ThemedActivity extends AppCompatActivity {
                 iterateViews((ViewGroup) child);
             } else if (child instanceof IThemer) {
                 ((IThemer) child).applyThemeColors(accentAccentColor, accentAccentSecondaryColor, backgroundColor);
-            } else if (child instanceof Button) {
-                //TODO Add Button default implementation
             } else {
-                //TODO Add other components
+                ColorStateList colorStateList = ColorStateList.valueOf(accentAccentColor);
+                if (child instanceof MaterialButton) {
+                    ((MaterialButton) child).setRippleColor(ColorStateList.valueOf(accentAccentSecondaryColor));
+                    child.setBackgroundTintList(colorStateList);
+                    ((MaterialButton) child).setTextColor(ColorUtils.isColorDark(accentAccentColor) ? Color.WHITE : Color.BLACK);
+                } else if (child instanceof Switch) {
+                    int[][] states = new int[][]{
+                            new int[]{-android.R.attr.state_checked},
+                            new int[]{android.R.attr.state_checked},
+                    };
+                    int[] thumbColors = new int[]{
+                            Color.WHITE,
+                            accentAccentColor,
+                    };
+                    int[] trackColors = new int[]{
+                            ColorUtils.lightenColor(backgroundColor, .3f),
+                            accentAccentSecondaryColor,
+                    };
+                    ((Switch) child).setTrackTintList(new ColorStateList(states, trackColors));
+                    ((Switch) child).setThumbTintList(new ColorStateList(states, thumbColors));
+                } else if (child instanceof AppCompatSeekBar) {
+                    ((AppCompatSeekBar) child).setThumbTintList(colorStateList);
+                    ((AppCompatSeekBar) child).setProgressTintList(colorStateList);
+                } else if (child instanceof SeekBar) {
+                    ((SeekBar) child).setThumbTintList(colorStateList);
+                    ((SeekBar) child).setProgressTintList(colorStateList);
+                } else if (child instanceof CheckBox) {
+                    ((CheckBox) child).setButtonTintList(colorStateList);
+                    ((CheckBox) child).setTextColor(ColorUtils.isColorDark(backgroundColor) ? Color.WHITE : Color.BLACK);
+                } else if (child instanceof ProgressBar) {
+                    ((ProgressBar) child).setProgressTintList(colorStateList);
+                    ((ProgressBar) child).setSecondaryProgressTintList(colorStateList);
+                    if (((ProgressBar) child).isIndeterminate()) {
+                        ((ProgressBar) child).setIndeterminateTintList(colorStateList);
+                    }
+                } else if (child instanceof RadioButton) {
+                    ((RadioButton) child).setButtonTintList(colorStateList);
+                    ((RadioButton) child).setTextColor(ColorUtils.isColorDark(accentAccentColor) ? Color.WHITE : Color.BLACK);
+                } else if (child instanceof AppCompatButton) {
+                    child.setBackgroundTintList(colorStateList);
+                    ((AppCompatButton) child).setTextColor(ColorUtils.isColorDark(accentAccentColor) ? Color.WHITE : Color.BLACK);
+                } else if (child instanceof Button) {
+                    child.setBackgroundTintList(colorStateList);
+                    ((Button) child).setTextColor(ColorUtils.isColorDark(accentAccentColor) ? Color.WHITE : Color.BLACK);
+                }
             }
         }
     }
