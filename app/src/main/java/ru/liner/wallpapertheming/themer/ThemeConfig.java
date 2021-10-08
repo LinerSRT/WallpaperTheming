@@ -15,6 +15,9 @@ public class ThemeConfig {
     private final long animationDuration;
     private final boolean coloredStatusBar;
     private final boolean coloredNavigationBar;
+    private final boolean changeBackgroundColors;
+    private final boolean changeStandardViewColors;
+    private final boolean changeTextColors;
     private final boolean animateColorChanges;
 
     private ThemeConfig(Builder builder) {
@@ -24,6 +27,9 @@ public class ThemeConfig {
         this.animationDuration = builder.animationDuration;
         this.coloredStatusBar = builder.coloredStatusBar;
         this.coloredNavigationBar = builder.coloredNavigationBar;
+        this.changeBackgroundColors = builder.changeBackgroundColors;
+        this.changeStandardViewColors = builder.changeStandardViewColors;
+        this.changeTextColors = builder.changeTextColors;
         this.animateColorChanges = builder.animateColorChanges;
     }
 
@@ -55,6 +61,18 @@ public class ThemeConfig {
         return animateColorChanges;
     }
 
+    public boolean isChangeTextColors() {
+        return changeTextColors;
+    }
+
+    public boolean isChangeBackgroundColors() {
+        return changeBackgroundColors;
+    }
+
+    public boolean isChangeStandardViewColors() {
+        return changeStandardViewColors;
+    }
+
     public static class Builder{
         @IdRes
         private final int rootViewID;
@@ -65,14 +83,32 @@ public class ThemeConfig {
         private long animationDuration = 400;
         private boolean coloredStatusBar = true;
         private boolean coloredNavigationBar = true;
+        private boolean changeBackgroundColors = true;
+        private boolean changeStandardViewColors = true;
+        private boolean changeTextColors = true;
         private boolean animateColorChanges = false;
 
         public Builder(@IdRes int rootViewID) {
             this.rootViewID = rootViewID;
         }
 
-        public Builder setDefaultAccentAccentColor(int defaultAccentAccentColor) {
+        public Builder setDefaultAccentColor(int defaultAccentAccentColor) {
             this.defaultAccentAccentColor = defaultAccentAccentColor;
+            return this;
+        }
+
+        public Builder setChangeBackgroundColors(boolean changeBackgroundColors) {
+            this.changeBackgroundColors = changeBackgroundColors;
+            return this;
+        }
+
+        public Builder setChangeTextColors(boolean changeTextColors) {
+            this.changeTextColors = changeTextColors;
+            return this;
+        }
+
+        public Builder setChangeStandardViewColors(boolean changeStandardViewColors) {
+            this.changeStandardViewColors = changeStandardViewColors;
             return this;
         }
 
