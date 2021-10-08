@@ -96,10 +96,17 @@ public abstract class ThemedActivity extends AppCompatActivity {
         if (wallpaperManager == null)
             wallpaperManager = WallpaperManager.getInstance(this);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            palette = Palette.from(ImageUtils.drawableToBitmap(wallpaperManager.getDrawable())).generate();
-            accentColor = palette.getVibrantColor(themeConfig.getDefaultAccentAccentColor());
-            accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
-            backgroundColor = ColorUtils.darkerColor(palette.getDarkMutedColor(themeConfig.getDefaultBackgroundColor()), .8f);
+            if(Utils.isCurrentWallpaperLive(this, wallpaperManager.getWallpaperInfo())) {
+                //TODO Live wallpaper is not supported!
+                accentColor = themeConfig.getDefaultAccentAccentColor();
+                accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
+                backgroundColor = themeConfig.getDefaultBackgroundColor();
+            } else {
+                palette = Palette.from(ImageUtils.drawableToBitmap(wallpaperManager.getDrawable())).generate();
+                accentColor = palette.getVibrantColor(themeConfig.getDefaultAccentAccentColor());
+                accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
+                backgroundColor = ColorUtils.darkerColor(palette.getDarkMutedColor(themeConfig.getDefaultBackgroundColor()), .8f);
+            }
             if (themeConfig.isAnimateColorChanges()) {
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), themeConfig.getDefaultAccentAccentColor(), accentColor);
                 colorAnimation.setDuration(themeConfig.getAnimationDuration());
