@@ -3,12 +3,14 @@ package ru.liner.wallpapertheming.themer;
 import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.WallpaperColors;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import android.widget.Switch;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -88,13 +91,8 @@ public abstract class ThemedActivity extends AppCompatActivity {
         applyTheme();
     }
 
-    private void applyTheme() {
-        if (!wallpaperChanged)
-            return;
-        if (window == null)
-            window = getWindow();
-        if (wallpaperManager == null)
-            wallpaperManager = WallpaperManager.getInstance(this);
+
+    private void getWallpaperColorsPreO(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             if(Utils.isCurrentWallpaperLive(this, wallpaperManager.getWallpaperInfo())) {
                 //TODO Live wallpaper is not supported!
@@ -102,23 +100,52 @@ public abstract class ThemedActivity extends AppCompatActivity {
                 accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
                 backgroundColor = themeConfig.getDefaultBackgroundColor();
             } else {
-                palette = Palette.from(ImageUtils.drawableToBitmap(wallpaperManager.getDrawable())).generate();
+                palette = Palette.from(ImageUtils.drawableToBitmap(wallpaperManager.getFastDrawable())).generate();
                 accentColor = palette.getVibrantColor(themeConfig.getDefaultAccentAccentColor());
                 accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
                 backgroundColor = ColorUtils.darkerColor(palette.getDarkMutedColor(themeConfig.getDefaultBackgroundColor()), .8f);
             }
-            if (themeConfig.isAnimateColorChanges()) {
-                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), themeConfig.getDefaultAccentAccentColor(), accentColor);
-                colorAnimation.setDuration(themeConfig.getAnimationDuration());
-                colorAnimation.setStartDelay(250);
-                colorAnimation.setInterpolator(new AccelerateInterpolator());
-                colorAnimation.addUpdateListener(animator -> setThemeColors((Integer) animator.getAnimatedValue(), ColorUtils.darkerColor((Integer) animator.getAnimatedValue(), 0.3f), backgroundColor));
-                colorAnimation.start();
-            } else {
-                setThemeColors(accentColor, accentSecondaryColor, backgroundColor);
-            }
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 4879);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O_MR1)
+    private void getWallpaperColors(){
+        WallpaperColors wallpaperColors = wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
+        if(wallpaperColors == null){
+            //TODO Live wallpaper is not supported!
+            accentColor = themeConfig.getDefaultAccentAccentColor();
+            accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
+            backgroundColor = themeConfig.getDefaultBackgroundColor();
+        } else {
+            accentColor = wallpaperColors.getSecondaryColor().toArgb();
+            accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
+            backgroundColor = ColorUtils.darkerColor(wallpaperColors.getTertiaryColor().toArgb(), .8f);
+        }
+    }
+
+    private void applyTheme() {
+        if (!wallpaperChanged)
+            return;
+        if (window == null)
+            window = getWindow();
+        if (wallpaperManager == null)
+            wallpaperManager = WallpaperManager.getInstance(this);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            getWallpaperColors();
+        } else {
+            getWallpaperColorsPreO();
+        }
+        if (themeConfig.isAnimateColorChanges()) {
+            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), themeConfig.getDefaultAccentAccentColor(), accentColor);
+            colorAnimation.setDuration(themeConfig.getAnimationDuration());
+            colorAnimation.setStartDelay(250);
+            colorAnimation.setInterpolator(new AccelerateInterpolator());
+            colorAnimation.addUpdateListener(animator -> setThemeColors((Integer) animator.getAnimatedValue(), ColorUtils.darkerColor((Integer) animator.getAnimatedValue(), 0.3f), backgroundColor));
+            colorAnimation.start();
+        } else {
+            setThemeColors(accentColor, accentSecondaryColor, backgroundColor);
         }
     }
 
