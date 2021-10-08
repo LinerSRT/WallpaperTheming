@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -92,32 +93,30 @@ public abstract class ThemedActivity extends AppCompatActivity {
     }
 
 
-    private void getWallpaperColorsPreO(){
+    private void getWallpaperColorsFromDrawable(Drawable drawable) {
+        palette = Palette.from(ImageUtils.drawableToBitmap(drawable)).generate();
+        accentColor = palette.getDarkVibrantColor(themeConfig.getDefaultAccentAccentColor());
+        accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
+        backgroundColor = ColorUtils.darkerColor(palette.getDarkMutedColor(themeConfig.getDefaultBackgroundColor()), .8f);
+    }
+
+    private void getWallpaperColorsPreO() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            if(Utils.isCurrentWallpaperLive(this, wallpaperManager.getWallpaperInfo())) {
-                //TODO Live wallpaper is not supported!
-                accentColor = themeConfig.getDefaultAccentAccentColor();
-                accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
-                backgroundColor = themeConfig.getDefaultBackgroundColor();
-            } else {
-                palette = Palette.from(ImageUtils.drawableToBitmap(wallpaperManager.getFastDrawable())).generate();
-                accentColor = palette.getVibrantColor(themeConfig.getDefaultAccentAccentColor());
-                accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
-                backgroundColor = ColorUtils.darkerColor(palette.getDarkMutedColor(themeConfig.getDefaultBackgroundColor()), .8f);
-            }
+            getWallpaperColorsFromDrawable(
+                    Utils.isCurrentWallpaperLive(this, wallpaperManager.getWallpaperInfo()) ?
+                            wallpaperManager.getWallpaperInfo().loadThumbnail(getPackageManager()) :
+                            wallpaperManager.getFastDrawable()
+            );
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 4879);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O_MR1)
-    private void getWallpaperColors(){
+    private void getWallpaperColors() {
         WallpaperColors wallpaperColors = wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
-        if(wallpaperColors == null){
-            //TODO Live wallpaper is not supported!
-            accentColor = themeConfig.getDefaultAccentAccentColor();
-            accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
-            backgroundColor = themeConfig.getDefaultBackgroundColor();
+        if (wallpaperColors == null) {
+            getWallpaperColorsFromDrawable(wallpaperManager.getWallpaperInfo().loadThumbnail(getPackageManager()));
         } else {
             accentColor = wallpaperColors.getSecondaryColor().toArgb();
             accentSecondaryColor = ColorUtils.darkerColor(accentColor, .3f);
