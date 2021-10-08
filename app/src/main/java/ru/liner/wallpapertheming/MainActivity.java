@@ -8,13 +8,11 @@ import ru.liner.wallpapertheming.themer.ThemeConfig;
 import ru.liner.wallpapertheming.themer.ThemedActivity;
 
 public class MainActivity extends ThemedActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
     @Override
     public ThemeConfig getThemeConfig() {
         return new ThemeConfig.Builder(R.id.mainLayout)
@@ -25,7 +23,9 @@ public class MainActivity extends ThemedActivity {
                 .setChangeTextColors(false)
                 .setAnimateColorChanges(true)
                 .setAnimationDuration(1000)
+                .setChangeStandardViewColors(true)
                 .setDefaultAccentColor(ContextCompat.getColor(this, R.color.design_default_color_primary))
+                .setDefaultBackgroundColor(ContextCompat.getColor(this, R.color.white))
                 .build();
     }
 }
