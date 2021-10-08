@@ -14,12 +14,14 @@
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="Button"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="button"/>
+        android:text="button"
+        tools:ignore="HardcodedText" />
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -45,24 +47,28 @@
         android:id="@+id/chip4"
         android:layout_width="match_parent"
         android:text="Chip"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:ignore="HardcodedText" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CheckBox" />
+        android:text="CheckBox"
+        tools:ignore="HardcodedText" />
 
     <RadioButton
         android:id="@+id/radioButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="RadioButton" />
+        android:text="RadioButton"
+        tools:ignore="HardcodedText" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch1"
         android:textColor="#ffffff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Switch" />
+        android:text="Switch"
+        tools:ignore="HardcodedText" />
 </LinearLayout>
