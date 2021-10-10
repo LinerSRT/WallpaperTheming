@@ -19,8 +19,8 @@ public class WPTextView extends AppCompatTextView implements IThemer {
     }
 
     @Override
-    public void applyThemeColors(int accentAccentColor, int accentAccentSecondaryColor, int backgroundColor) {
+    public void applyColors(int accentColor, int accentSecondaryColor, int backgroundColor) {
         setBackgroundColor(backgroundColor);
-        setLinkTextColor(accentAccentColor);
+        setLinkTextColor(accentColor);
     }
 }

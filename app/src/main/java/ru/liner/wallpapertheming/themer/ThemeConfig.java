@@ -1,6 +1,8 @@
 package ru.liner.wallpapertheming.themer;
 
 import android.graphics.Color;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
@@ -8,132 +10,125 @@ import androidx.annotation.IdRes;
 public class ThemeConfig {
     @IdRes
     private final int rootViewID;
-    @ColorInt
-    private final int defaultAccentAccentColor;
-    @ColorInt
-    private final int defaultBackgroundColor;
+    private final boolean useSecondAccentColor;
+    private final boolean animateApplyingColors;
+    private final boolean changeSystemBars;
+    private final boolean changeTextColor;
+    private final boolean changeAndroidViews;
+    private final boolean changeActivityBackgroundColor;
+    private final Interpolator animationInterpolator;
     private final long animationDuration;
-    private final boolean coloredStatusBar;
-    private final boolean coloredNavigationBar;
-    private final boolean changeBackgroundColors;
-    private final boolean changeStandardViewColors;
-    private final boolean changeTextColors;
-    private final boolean animateColorChanges;
 
     private ThemeConfig(Builder builder) {
         this.rootViewID = builder.rootViewID;
-        this.defaultAccentAccentColor = builder.defaultAccentAccentColor;
-        this.defaultBackgroundColor = builder.defaultBackgroundColor;
+        this.useSecondAccentColor = builder.useSecondAccentColor;
+        this.animateApplyingColors = builder.animateApplyingColors;
+        this.changeSystemBars = builder.changeSystemBars;
+        this.changeTextColor = builder.changeTextColor;
+        this.changeAndroidViews = builder.changeAndroidViews;
+        this.changeActivityBackgroundColor = builder.changeActivityBackgroundColor;
+        this.animationInterpolator = builder.animationInterpolator;
         this.animationDuration = builder.animationDuration;
-        this.coloredStatusBar = builder.coloredStatusBar;
-        this.coloredNavigationBar = builder.coloredNavigationBar;
-        this.changeBackgroundColors = builder.changeBackgroundColors;
-        this.changeStandardViewColors = builder.changeStandardViewColors;
-        this.changeTextColors = builder.changeTextColors;
-        this.animateColorChanges = builder.animateColorChanges;
     }
 
     public int getRootViewID() {
         return rootViewID;
     }
 
-    public int getDefaultAccentAccentColor() {
-        return defaultAccentAccentColor;
+    public boolean isUseSecondAccentColor() {
+        return useSecondAccentColor;
     }
 
-    public int getDefaultBackgroundColor() {
-        return defaultBackgroundColor;
+    public boolean isAnimateApplyingColors() {
+        return animateApplyingColors;
+    }
+
+    public boolean isChangeSystemBars() {
+        return changeSystemBars;
+    }
+
+    public boolean isChangeTextColor() {
+        return changeTextColor;
+    }
+
+    public boolean isChangeAndroidViews() {
+        return changeAndroidViews;
+    }
+
+    public boolean isChangeActivityBackgroundColor() {
+        return changeActivityBackgroundColor;
+    }
+
+    public Interpolator getAnimationInterpolator() {
+        return animationInterpolator;
     }
 
     public long getAnimationDuration() {
         return animationDuration;
     }
 
-    public boolean isColoredStatusBar() {
-        return coloredStatusBar;
-    }
-
-    public boolean isColoredNavigationBar() {
-        return coloredNavigationBar;
-    }
-
-    public boolean isAnimateColorChanges() {
-        return animateColorChanges;
-    }
-
-    public boolean isChangeTextColors() {
-        return changeTextColors;
-    }
-
-    public boolean isChangeBackgroundColors() {
-        return changeBackgroundColors;
-    }
-
-    public boolean isChangeStandardViewColors() {
-        return changeStandardViewColors;
-    }
-
     public static class Builder{
         @IdRes
         private final int rootViewID;
-        @ColorInt
-        private int defaultAccentAccentColor = Color.BLACK;
-        @ColorInt
-        private int defaultBackgroundColor = Color.BLACK;
-        private long animationDuration = 400;
-        private boolean coloredStatusBar = true;
-        private boolean coloredNavigationBar = true;
-        private boolean changeBackgroundColors = true;
-        private boolean changeStandardViewColors = true;
-        private boolean changeTextColors = true;
-        private boolean animateColorChanges = false;
+        private boolean useSecondAccentColor;
+        private boolean animateApplyingColors;
+        private boolean changeSystemBars;
+        private boolean changeTextColor;
+        private boolean changeAndroidViews;
+        private boolean changeActivityBackgroundColor;
+        private Interpolator animationInterpolator;
+        private long animationDuration;
+
 
         public Builder(@IdRes int rootViewID) {
             this.rootViewID = rootViewID;
+            this.useSecondAccentColor = true;
+            this.animateApplyingColors = true;
+            this.changeSystemBars = true;
+            this.changeTextColor = false;
+            this.changeAndroidViews = true;
+            this.changeActivityBackgroundColor = true;
+            this.animationInterpolator = new DecelerateInterpolator();
+            this.animationDuration = 400;
         }
 
-        public Builder setDefaultAccentColor(int defaultAccentAccentColor) {
-            this.defaultAccentAccentColor = defaultAccentAccentColor;
+        public Builder setUseSecondAccentColor(boolean useSecondAccentColor) {
+            this.useSecondAccentColor = useSecondAccentColor;
             return this;
         }
 
-        public Builder setChangeBackgroundColors(boolean changeBackgroundColors) {
-            this.changeBackgroundColors = changeBackgroundColors;
+        public Builder setAnimateApplyingColors(boolean animateApplyingColors) {
+            this.animateApplyingColors = animateApplyingColors;
             return this;
         }
 
-        public Builder setChangeTextColors(boolean changeTextColors) {
-            this.changeTextColors = changeTextColors;
+        public Builder setChangeSystemBars(boolean changeSystemBars) {
+            this.changeSystemBars = changeSystemBars;
             return this;
         }
 
-        public Builder setChangeStandardViewColors(boolean changeStandardViewColors) {
-            this.changeStandardViewColors = changeStandardViewColors;
+        public Builder setChangeTextColor(boolean changeTextColor) {
+            this.changeTextColor = changeTextColor;
             return this;
         }
 
-        public Builder setDefaultBackgroundColor(int defaultBackgroundColor) {
-            this.defaultBackgroundColor = defaultBackgroundColor;
+        public Builder setChangeAndroidViews(boolean changeAndroidViews) {
+            this.changeAndroidViews = changeAndroidViews;
+            return this;
+        }
+
+        public Builder setChangeActivityBackgroundColor(boolean changeActivityBackgroundColor) {
+            this.changeActivityBackgroundColor = changeActivityBackgroundColor;
+            return this;
+        }
+
+        public Builder setAnimationInterpolator(Interpolator animationInterpolator) {
+            this.animationInterpolator = animationInterpolator;
             return this;
         }
 
         public Builder setAnimationDuration(long animationDuration) {
             this.animationDuration = animationDuration;
-            return this;
-        }
-
-        public Builder setColoredStatusBar(boolean coloredStatusBar) {
-            this.coloredStatusBar = coloredStatusBar;
-            return this;
-        }
-
-        public Builder setColoredNavigationBar(boolean coloredNavigationBar) {
-            this.coloredNavigationBar = coloredNavigationBar;
-            return this;
-        }
-
-        public Builder setAnimateColorChanges(boolean animateColorChanges) {
-            this.animateColorChanges = animateColorChanges;
             return this;
         }
 
