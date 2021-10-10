@@ -17,6 +17,14 @@
         app:switchText="Use secondary color"
         />
 
+    <ru.liner.wallpapertheming.views.RoundedSwitch
+        android:id="@+id/useTextColorSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:switchText="Colorize text"
+        />
+
     <ru.liner.wallpapertheming.views.RoundedSeek
         android:id="@+id/animationDurationSeek"
         android:layout_width="match_parent"
@@ -24,4 +32,36 @@
         app:seekText="Animation duration"
         app:seekValueFormat="%s ms"
         />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Current wallpaper"
+        android:textSize="16sp"
+        android:gravity="center"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/wallpaperCard"
+        android:layout_width="match_parent"
+        app:cardCornerRadius="8dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="8dp"
+        android:padding="8dp"
+        android:background="@drawable/background_round"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/wallpaperView"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="200dp"
+            android:layout_margin="8dp"
+            android:elevation="8dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"/>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -65,6 +66,10 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
         deviceWallpaperManager.requestColors();
     }
 
+    public void applyColorsFromActivity(@ColorInt int accentColor, @ColorInt int accentColorDark, @ColorInt int backgroundColor) {
+
+    }
+
 
     private void applyColors(WallpaperColors wallpaperColors) {
         @ColorInt int accentColor = themeConfig.isUseSecondAccentColor() ? wallpaperColors.getAccentSecondColor() : wallpaperColors.getAccentColor();
@@ -74,6 +79,7 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
     }
 
     private void applyColors(@ColorInt int accentColor, @ColorInt int accentColorDark, @ColorInt int backgroundColor) {
+        applyColorsFromActivity(accentColor, accentColorDark, backgroundColor);
         if (themeConfig.isChangeSystemBars()) {
             window.setNavigationBarColor(accentColorDark);
             window.setStatusBarColor(accentColorDark);
@@ -184,6 +190,12 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
                     child.setBackgroundTintList(colorStateList);
                     if (themeConfig.isChangeTextColor())
                         ((Button) child).setTextColor(ColorUtils.isColorDark(accentColor) ? Color.WHITE : Color.BLACK);
+                } else if (child instanceof TextView) {
+                    if(!themeConfig.isChangeTextColor())
+                        continue;
+                    ((TextView) child).setTextColor(ColorUtils.isColorDark(accentColor) ? Color.WHITE : Color.BLACK);
+                    ((TextView) child).setHighlightColor(accentColor);
+                    ((TextView) child).setLinkTextColor(accentColor);
                 }
             }
         }

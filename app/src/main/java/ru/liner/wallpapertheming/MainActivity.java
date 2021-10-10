@@ -2,30 +2,44 @@ package ru.liner.wallpapertheming;
 
 import android.os.Bundle;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatSeekBar;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.cardview.widget.CardView;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import ru.liner.wallpapertheming.themer.ThemeConfig;
 import ru.liner.wallpapertheming.themer.ThemedActivity;
+import ru.liner.wallpapertheming.themer.WallpaperColors;
 import ru.liner.wallpapertheming.views.RoundedSeek;
 import ru.liner.wallpapertheming.views.RoundedSwitch;
 
 public class MainActivity extends ThemedActivity {
     private ThemeConfig themeConfig;
     private RoundedSwitch useSecondColorSwitch;
+    private RoundedSwitch useTextColorSwitch;
     private RoundedSeek animationDurationSeek;
+    private ImageView wallpaperView;
+    private CardView wallpaperCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         useSecondColorSwitch = findViewById(R.id.useSecondColorSwitch);
+        useTextColorSwitch = findViewById(R.id.useTextColorSwitch);
         animationDurationSeek = findViewById(R.id.animationDurationSeek);
+        wallpaperView = findViewById(R.id.wallpaperView);
+        wallpaperCard = findViewById(R.id.wallpaperCard);
         useSecondColorSwitch.setSwitchCallback((switchCompat, checked) -> {
-            if(themeConfig != null) {
+            if (themeConfig != null) {
                 themeConfig.setUseSecondAccentColor(checked);
+                deviceWallpaperManager.requestColorsForce();
+            }
+        });
+        useTextColorSwitch.setSwitchCallback((switchCompat, checked) -> {
+            if (themeConfig != null) {
+                themeConfig.setChangeTextColor(checked);
                 deviceWallpaperManager.requestColorsForce();
             }
         });
@@ -37,12 +51,13 @@ public class MainActivity extends ThemedActivity {
 
             @Override
             public void onFinish(AppCompatSeekBar seekBar, int value) {
-                if(themeConfig != null) {
+                if (themeConfig != null) {
                     themeConfig.setAnimationDuration(value);
                     deviceWallpaperManager.requestColorsForce();
                 }
             }
         });
+        wallpaperView.setImageDrawable(deviceWallpaperManager.getWallpaperDrawable());
     }
 
     @Override
@@ -62,5 +77,20 @@ public class MainActivity extends ThemedActivity {
     @Override
     public int getAccentDarkColor() {
         return 0;
+    }
+
+    @Override
+    public void onWallpaperColorsChanged(WallpaperColors wallpaperColors) {
+        if (wallpaperView != null)
+            wallpaperView.setImageDrawable(deviceWallpaperManager.getWallpaperDrawable());
+        super.onWallpaperColorsChanged(wallpaperColors);
+    }
+
+    @Override
+    public void applyColorsFromActivity(int accentColor, int accentColorDark, int backgroundColor) {
+        DrawableCompat.setTint(
+                DrawableCompat.wrap(wallpaperCard.getBackground()),
+                accentColor
+        );
     }
 }

@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -28,18 +30,11 @@ public class DeviceWallpaperManager {
     private final BroadcastReceiver wallpaperChangedReceiver;
     @Nullable
     private WallpaperColors currentColors;
-    private final ColorExtractor colorExtractor;
 
     public DeviceWallpaperManager(@NonNull Context context, @NonNull ICallback callback) {
         this.context = context;
         this.wallpaperManager = WallpaperManager.getInstance(context);
         this.callback = callback;
-        this.colorExtractor = new ColorExtractor(wallpaperColors -> {
-            if (currentColors == null || currentColors.isChanged(wallpaperColors)) {
-                currentColors = wallpaperColors;
-                callback.onWallpaperColorsChanged(currentColors);
-            }
-        });
         this.currentColors = null;
         wallpaperChangedReceiver = new BroadcastReceiver() {
             @Override
@@ -55,24 +50,30 @@ public class DeviceWallpaperManager {
         requestColors();
     }
 
+    public Drawable getWallpaperDrawable(){
+        return  Utils.isCurrentWallpaperLive(context, wallpaperManager.getWallpaperInfo()) ?
+                wallpaperManager.getWallpaperInfo().loadThumbnail(context.getPackageManager()) :
+                wallpaperManager.getDrawable();
+    }
+
     public void requestColors() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
             android.app.WallpaperColors androidWallpaperColors = wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
             if (androidWallpaperColors == null) {
-                colorExtractor.doInBackground(
-                        Utils.isCurrentWallpaperLive(context, wallpaperManager.getWallpaperInfo()) ?
-                                wallpaperManager.getWallpaperInfo().loadThumbnail(context.getPackageManager()) :
-                                wallpaperManager.getDrawable());
+                extractColor(getWallpaperDrawable());
             } else {
                 boolean darkTheme = (getColorHints(androidWallpaperColors) & 2) != 0;
+                Color primary = androidWallpaperColors.getPrimaryColor();
+                Color secondary = androidWallpaperColors.getSecondaryColor();
+                Color tertiary = androidWallpaperColors.getTertiaryColor();
                 WallpaperColors wallpaperColors = new WallpaperColors(
-                        androidWallpaperColors.getPrimaryColor().toArgb(),
-                        ColorUtils.darkerColor(androidWallpaperColors.getPrimaryColor().toArgb(), .3f),
-                        androidWallpaperColors.getSecondaryColor().toArgb(),
-                        ColorUtils.darkerColor(androidWallpaperColors.getSecondaryColor().toArgb(), .3f),
+                        primary == null ? Color.BLACK : primary.toArgb(),
+                        ColorUtils.darkerColor(primary == null ? Color.BLACK : primary.toArgb(), .3f),
+                        secondary == null ? Color.BLACK : secondary.toArgb(),
+                        ColorUtils.darkerColor(secondary == null ? Color.BLACK : secondary.toArgb(), .3f),
                         darkTheme ?
-                                ColorUtils.darkerColor(androidWallpaperColors.getPrimaryColor().toArgb(), 0.9f) :
-                                ColorUtils.lightenColor(androidWallpaperColors.getPrimaryColor().toArgb(), 0.9f)
+                                ColorUtils.darkerColor(primary == null ? Color.BLACK : primary.toArgb(), 0.9f) :
+                                ColorUtils.lightenColor(primary == null ? Color.BLACK : primary.toArgb(), 0.9f)
                 );
                 if (currentColors == null || currentColors.isChanged(wallpaperColors)) {
                     currentColors = wallpaperColors;
@@ -80,10 +81,7 @@ public class DeviceWallpaperManager {
                 }
             }
         } else {
-            colorExtractor.doInBackground(
-                    Utils.isCurrentWallpaperLive(context, wallpaperManager.getWallpaperInfo()) ?
-                            wallpaperManager.getWallpaperInfo().loadThumbnail(context.getPackageManager()) :
-                            wallpaperManager.getDrawable());
+            extractColor(getWallpaperDrawable());
         }
     }
 
@@ -102,42 +100,34 @@ public class DeviceWallpaperManager {
         void onWallpaperColorsChanged(WallpaperColors wallpaperColors);
     }
 
-    private static class ColorExtractor extends AsyncTask<Drawable, WallpaperColors, WallpaperColors> {
-        private final IExtractorCallback callback;
-
-        public ColorExtractor(IExtractorCallback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        protected WallpaperColors doInBackground(Drawable... drawables) {
-            if (drawables.length == 0)
-                return null;
-            Palette palette = Palette.from(ImageUtils.drawableToBitmap(drawables[0])).generate();
-            Palette.Swatch accentSwatch = palette.getDarkVibrantSwatch();
-            if (accentSwatch == null)
-                accentSwatch = palette.getVibrantSwatch();
-            Palette.Swatch accentSecondSwatch = palette.getDominantSwatch();
-            if (accentSecondSwatch == null)
-                accentSecondSwatch = palette.getLightVibrantSwatch();
-            return new WallpaperColors(
-                    accentSwatch.getRgb(),
-                    ColorUtils.darkerColor(accentSwatch.getRgb(), .3f),
-                    accentSecondSwatch.getRgb(),
-                    ColorUtils.darkerColor(accentSecondSwatch.getRgb(), .3f),
-                    palette.getDarkMutedColor(Color.DKGRAY)
-            );
-        }
-
-        @Override
-        protected void onPostExecute(WallpaperColors wallpaperColors) {
-            if (wallpaperColors != null)
-                callback.onExtracted(wallpaperColors);
-        }
-
-        public interface IExtractorCallback {
-            void onExtracted(WallpaperColors wallpaperColors);
-        }
+    private void extractColor(Drawable drawable){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Palette palette = Palette.from(ImageUtils.drawableToBitmap(drawable)).generate();
+                Palette.Swatch accentSwatch = palette.getDarkVibrantSwatch();
+                if (accentSwatch == null)
+                    accentSwatch = palette.getVibrantSwatch();
+                Palette.Swatch accentSecondSwatch = palette.getDominantSwatch();
+                if (accentSecondSwatch == null)
+                    accentSecondSwatch = palette.getLightVibrantSwatch();
+                if(accentSwatch == null)
+                    accentSwatch = palette.getDominantSwatch();
+                if(accentSecondSwatch == null)
+                    accentSecondSwatch = palette.getDominantSwatch();
+                WallpaperColors wallpaperColors = new WallpaperColors(
+                        accentSwatch.getRgb(),
+                        ColorUtils.darkerColor(accentSwatch.getRgb(), .3f),
+                        accentSecondSwatch.getRgb(),
+                        ColorUtils.darkerColor(accentSecondSwatch.getRgb(), .3f),
+                        palette.getDarkMutedColor(Color.DKGRAY)
+                );
+                if (currentColors == null || currentColors.isChanged(wallpaperColors)) {
+                    currentColors = wallpaperColors;
+                    new Handler(Looper.getMainLooper()).post(() -> callback.onWallpaperColorsChanged(currentColors));
+                }
+            }
+        }).start();
     }
 
     private int getColorHints(android.app.WallpaperColors colors) {
