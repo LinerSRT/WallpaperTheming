@@ -32,6 +32,16 @@
         app:seekText="Animation duration"
         app:seekValueFormat="%s ms"
         />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/refreshColors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:textAllCaps="false"
+        android:padding="16dp"
+        android:text="Refresh colors"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"

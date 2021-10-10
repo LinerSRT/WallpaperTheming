@@ -1,12 +1,15 @@
 package ru.liner.wallpapertheming;
 
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.drawable.DrawableCompat;
+
+import com.google.android.material.button.MaterialButton;
 
 import ru.liner.wallpapertheming.themer.ThemeConfig;
 import ru.liner.wallpapertheming.themer.ThemedActivity;
@@ -19,6 +22,7 @@ public class MainActivity extends ThemedActivity {
     private RoundedSwitch useSecondColorSwitch;
     private RoundedSwitch useTextColorSwitch;
     private RoundedSeek animationDurationSeek;
+    private MaterialButton refreshColors;
     private ImageView wallpaperView;
     private CardView wallpaperCard;
 
@@ -29,18 +33,17 @@ public class MainActivity extends ThemedActivity {
         useSecondColorSwitch = findViewById(R.id.useSecondColorSwitch);
         useTextColorSwitch = findViewById(R.id.useTextColorSwitch);
         animationDurationSeek = findViewById(R.id.animationDurationSeek);
+        refreshColors = findViewById(R.id.refreshColors);
         wallpaperView = findViewById(R.id.wallpaperView);
         wallpaperCard = findViewById(R.id.wallpaperCard);
         useSecondColorSwitch.setSwitchCallback((switchCompat, checked) -> {
             if (themeConfig != null) {
                 themeConfig.setUseSecondAccentColor(checked);
-                deviceWallpaperManager.requestColorsForce();
             }
         });
         useTextColorSwitch.setSwitchCallback((switchCompat, checked) -> {
             if (themeConfig != null) {
                 themeConfig.setChangeTextColor(checked);
-                deviceWallpaperManager.requestColorsForce();
             }
         });
         animationDurationSeek.setSwitchCallback(new RoundedSeek.SeekCallback() {
@@ -53,11 +56,11 @@ public class MainActivity extends ThemedActivity {
             public void onFinish(AppCompatSeekBar seekBar, int value) {
                 if (themeConfig != null) {
                     themeConfig.setAnimationDuration(value);
-                    deviceWallpaperManager.requestColorsForce();
                 }
             }
         });
         wallpaperView.setImageDrawable(deviceWallpaperManager.getWallpaperDrawable());
+        refreshColors.setOnClickListener(view -> deviceWallpaperManager.requestColorsForce());
     }
 
     @Override
