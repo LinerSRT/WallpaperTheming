@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,12 +59,15 @@ public class DeviceWallpaperManager {
                                 wallpaperManager.getWallpaperInfo().loadThumbnail(context.getPackageManager()) :
                                 wallpaperManager.getDrawable());
             } else {
+                boolean darkTheme = (getColorHints(androidWallpaperColors) & 2) != 0;
                 WallpaperColors wallpaperColors = new WallpaperColors(
                         androidWallpaperColors.getPrimaryColor().toArgb(),
                         ColorUtils.darkerColor(androidWallpaperColors.getPrimaryColor().toArgb(), .3f),
                         androidWallpaperColors.getSecondaryColor().toArgb(),
                         ColorUtils.darkerColor(androidWallpaperColors.getSecondaryColor().toArgb(), .3f),
-                        ColorUtils.darkerColor(androidWallpaperColors.getTertiaryColor().toArgb(), 0.9f)
+                        darkTheme ?
+                                ColorUtils.darkerColor(androidWallpaperColors.getTertiaryColor().toArgb(), 0.9f) :
+                                ColorUtils.lightenColor(androidWallpaperColors.getTertiaryColor().toArgb(), 0.9f)
                 );
                 if (currentColors == null || currentColors.isChanged(wallpaperColors)) {
                     currentColors = wallpaperColors;
@@ -124,5 +128,14 @@ public class DeviceWallpaperManager {
         public interface IExtractorCallback {
             void onExtracted(WallpaperColors wallpaperColors);
         }
+    }
+
+    private int getColorHints(android.app.WallpaperColors colors) {
+        String str = colors.toString();
+        int index = str.lastIndexOf("h: ");
+        String val = str.substring(index + 3, str.length()-1);
+        if (TextUtils.isDigitsOnly(val))
+            return Integer.parseInt(val);
+        return 0;
     }
 }
