@@ -7,9 +7,7 @@ This project is start point to imlement same feature for your application in old
 - This project uses AndroidX
 - This project uses **androidx.palette**
 
-<img src="https://raw.githubusercontent.com/LinerSRT/WallpaperTheming/main/media/preview1.jpg" width="413" height="359" />
-<img src="https://raw.githubusercontent.com/LinerSRT/WallpaperTheming/main/media/preview2.jpg" width="413" height="359" />
-<img src="https://raw.githubusercontent.com/LinerSRT/WallpaperTheming/main/media/preview3.jpg" width="413" height="359" />
+<img src="https://raw.githubusercontent.com/LinerSRT/WallpaperTheming/main/media/record.gif" />
 
 ## Usage
 See demo project for more detail. 
@@ -35,15 +33,10 @@ public class MainActivity extends ThemedActivity {
     @Override
     public ThemeConfig getThemeConfig() {
         return new ThemeConfig.Builder(R.id.mainLayout)
-                .setAnimateColorChanges(true) // animate color changes
-                .setAnimationDuration(1000) // animation duration
-                .setColoredNavigationBar(true) // apply color to navigation bar
-                .setChangeBackgroundColors(false) // apply background color for activity
-                .setChangeTextColors(false) // apply text color for views
-                .setDefaultAccentColor(ContextCompat.getColor(this, R.color.design_default_color_primary)) // set default accent color
-                .setChangeStandardViewColors(true) // change android.widget.* views
-                .setDefaultBackgroundColor(ContextCompat.getColor(this, R.color.white)) // set default background color
-                .build();
+                .setAnimationDuration(500)
+                .setAnimationInterpolator(new AccelerateInterpolator())
+                .setUseSecondAccentColor(true)
+                .build()
     }
 }
 ```
