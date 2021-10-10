@@ -14,7 +14,7 @@ public class ColorUtils {
 
     @ColorInt
     public static int lightenColor(@ColorInt int color, float ratio){
-        return androidx.core.graphics.ColorUtils.blendARGB(color, Color.WHITE, ratio);
+        return androidx.core.graphics.ColorUtils.blendARGB(Color.WHITE, color, ratio);
     }
 
     @ColorInt

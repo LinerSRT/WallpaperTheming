@@ -50,6 +50,11 @@ public class DeviceWallpaperManager {
         context.registerReceiver(wallpaperChangedReceiver, new IntentFilter(Intent.ACTION_WALLPAPER_CHANGED));
     }
 
+    public void requestColorsForce(){
+        currentColors = null;
+        requestColors();
+    }
+
     public void requestColors() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
             android.app.WallpaperColors androidWallpaperColors = wallpaperManager.getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
@@ -66,8 +71,8 @@ public class DeviceWallpaperManager {
                         androidWallpaperColors.getSecondaryColor().toArgb(),
                         ColorUtils.darkerColor(androidWallpaperColors.getSecondaryColor().toArgb(), .3f),
                         darkTheme ?
-                                ColorUtils.darkerColor(androidWallpaperColors.getTertiaryColor().toArgb(), 0.9f) :
-                                ColorUtils.lightenColor(androidWallpaperColors.getTertiaryColor().toArgb(), 0.9f)
+                                ColorUtils.darkerColor(androidWallpaperColors.getPrimaryColor().toArgb(), 0.9f) :
+                                ColorUtils.lightenColor(androidWallpaperColors.getPrimaryColor().toArgb(), 0.9f)
                 );
                 if (currentColors == null || currentColors.isChanged(wallpaperColors)) {
                     currentColors = wallpaperColors;
@@ -86,6 +91,11 @@ public class DeviceWallpaperManager {
         if (wallpaperChangedReceiver != null) {
             context.unregisterReceiver(wallpaperChangedReceiver);
         }
+    }
+
+    @Nullable
+    public WallpaperColors getCurrentColors() {
+        return currentColors;
     }
 
     public interface ICallback {

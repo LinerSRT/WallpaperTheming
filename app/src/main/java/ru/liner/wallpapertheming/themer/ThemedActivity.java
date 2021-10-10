@@ -25,6 +25,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatSeekBar;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -36,7 +37,7 @@ import ru.liner.wallpapertheming.utils.ColorUtils;
 public abstract class ThemedActivity extends AppCompatActivity implements DeviceWallpaperManager.ICallback {
     protected ThemeConfig themeConfig;
     protected Window window;
-    private DeviceWallpaperManager deviceWallpaperManager;
+    protected DeviceWallpaperManager deviceWallpaperManager;
 
 
     @Override
@@ -92,7 +93,7 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
             window = getWindow();
         if (themeConfig.isAnimateApplyingColors()) {
             @ColorInt int accentColor = themeConfig.isUseSecondAccentColor() ? wallpaperColors.getAccentSecondColor() : wallpaperColors.getAccentColor();
-            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), getAccentColor(), accentColor);
+            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), deviceWallpaperManager.getCurrentColors() == null ? getAccentColor() : !themeConfig.isUseSecondAccentColor() ? deviceWallpaperManager.getCurrentColors().getAccentSecondColor() : deviceWallpaperManager.getCurrentColors().getAccentColor(), accentColor);
             colorAnimation.setDuration(themeConfig.getAnimationDuration());
             colorAnimation.setStartDelay(250);
             colorAnimation.setInterpolator(themeConfig.getAnimationInterpolator());
@@ -111,10 +112,13 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
             return;
         for (int i = 0; i < view.getChildCount(); i++) {
             View child = view.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                iterateViews((ViewGroup) child, accentColor, accentDarkColor, backgroundColor);
-            } else if (child instanceof IThemer) {
+            if (child instanceof IThemer) {
+                if (child instanceof ViewGroup) {
+                    iterateViews((ViewGroup) child, accentColor, accentDarkColor, backgroundColor);
+                }
                 ((IThemer) child).applyColors(accentColor, accentDarkColor, backgroundColor);
+            } else if (child instanceof ViewGroup) {
+                iterateViews((ViewGroup) child, accentColor, accentDarkColor, backgroundColor);
             } else if (themeConfig.isChangeAndroidViews()) {
                 ColorStateList colorStateList = ColorStateList.valueOf(accentColor);
                 if (child instanceof MaterialButton) {
@@ -122,6 +126,21 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
                     child.setBackgroundTintList(colorStateList);
                     if (themeConfig.isChangeTextColor())
                         ((MaterialButton) child).setTextColor(ColorUtils.isColorDark(accentColor) ? Color.WHITE : Color.BLACK);
+                } else if (child instanceof SwitchCompat) {
+                    int[][] states = new int[][]{
+                            new int[]{-android.R.attr.state_checked},
+                            new int[]{android.R.attr.state_checked},
+                    };
+                    int[] thumbColors = new int[]{
+                            Color.WHITE,
+                            accentColor,
+                    };
+                    int[] trackColors = new int[]{
+                            ColorUtils.lightenColor(backgroundColor, .3f),
+                            accentDarkColor,
+                    };
+                    ((SwitchCompat) child).setTrackTintList(new ColorStateList(states, trackColors));
+                    ((SwitchCompat) child).setThumbTintList(new ColorStateList(states, thumbColors));
                 } else if (child instanceof Switch) {
                     int[][] states = new int[][]{
                             new int[]{-android.R.attr.state_checked},

@@ -25,6 +25,13 @@ public class WallpaperColors {
         this.accentSecondColorDark = accentSecondColorDark;
         this.backgroundColor = backgroundColor;
     }
+    public WallpaperColors() {
+        this.accentColor = 0;
+        this.accentColorDark = 0;
+        this.accentSecondColor = 0;
+        this.accentSecondColorDark = 0;
+        this.backgroundColor = 0;
+    }
 
     public int getAccentColor() {
         return accentColor;

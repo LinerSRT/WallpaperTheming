@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RoundedSwitch">
+        <attr name="switchText" format="string|reference"/>
+    </declare-styleable>
+    <declare-styleable name="RoundedSeek">
+        <attr name="seekText" format="string|reference"/>
+        <attr name="seekValueFormat" format="string|reference"/>
+    </declare-styleable>
+</resources>

@@ -10,14 +10,14 @@ import androidx.annotation.IdRes;
 public class ThemeConfig {
     @IdRes
     private final int rootViewID;
-    private final boolean useSecondAccentColor;
-    private final boolean animateApplyingColors;
-    private final boolean changeSystemBars;
-    private final boolean changeTextColor;
-    private final boolean changeAndroidViews;
-    private final boolean changeActivityBackgroundColor;
-    private final Interpolator animationInterpolator;
-    private final long animationDuration;
+    private  boolean useSecondAccentColor;
+    private  boolean animateApplyingColors;
+    private  boolean changeSystemBars;
+    private  boolean changeTextColor;
+    private  boolean changeAndroidViews;
+    private  boolean changeActivityBackgroundColor;
+    private  Interpolator animationInterpolator;
+    private  long animationDuration;
 
     private ThemeConfig(Builder builder) {
         this.rootViewID = builder.rootViewID;
@@ -67,6 +67,38 @@ public class ThemeConfig {
         return animationDuration;
     }
 
+    public void setUseSecondAccentColor(boolean useSecondAccentColor) {
+        this.useSecondAccentColor = useSecondAccentColor;
+    }
+
+    public void setAnimateApplyingColors(boolean animateApplyingColors) {
+        this.animateApplyingColors = animateApplyingColors;
+    }
+
+    public void setChangeSystemBars(boolean changeSystemBars) {
+        this.changeSystemBars = changeSystemBars;
+    }
+
+    public void setChangeTextColor(boolean changeTextColor) {
+        this.changeTextColor = changeTextColor;
+    }
+
+    public void setChangeAndroidViews(boolean changeAndroidViews) {
+        this.changeAndroidViews = changeAndroidViews;
+    }
+
+    public void setChangeActivityBackgroundColor(boolean changeActivityBackgroundColor) {
+        this.changeActivityBackgroundColor = changeActivityBackgroundColor;
+    }
+
+    public void setAnimationInterpolator(Interpolator animationInterpolator) {
+        this.animationInterpolator = animationInterpolator;
+    }
+
+    public void setAnimationDuration(long animationDuration) {
+        this.animationDuration = animationDuration;
+    }
+
     public static class Builder{
         @IdRes
         private final int rootViewID;
@@ -87,7 +119,7 @@ public class ThemeConfig {
             this.changeSystemBars = true;
             this.changeTextColor = false;
             this.changeAndroidViews = true;
-            this.changeActivityBackgroundColor = true;
+            this.changeActivityBackgroundColor = false;
             this.animationInterpolator = new DecelerateInterpolator();
             this.animationDuration = 400;
         }

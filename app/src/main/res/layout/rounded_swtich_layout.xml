@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/roundContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_round"
+    android:elevation="8dp"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/roundedSwitchText"
+            android:layout_height="wrap_content"
+            android:text="Rounded view"
+            android:textSize="16sp"
+            android:layout_marginStart="4dp"
+            android:textColor="@color/white" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/roundedSwitch"
+            android:layout_width="wrap_content"
+            android:checked="true"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</FrameLayout>
