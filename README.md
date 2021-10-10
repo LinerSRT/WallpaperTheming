@@ -1,6 +1,8 @@
 # Wallpaper theming
 ![Android](https://img.shields.io/badge/Android-7.0%2B-brightgreen) ![API](https://img.shields.io/badge/API-24-blue.svg?style=flat) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/91406a16f3f149a1aa091afaa2904af5)](https://www.codacy.com/gh/LinerSRT/WallpaperTheming/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LinerSRT/WallpaperTheming&amp;utm_campaign=Badge_Grade)
 
+### [Download demo apk](https://github.com/LinerSRT/WallpaperTheming/tree/main/sample)
+
 Android 12 introduced new feature for changing system accent color using wallpaper. 
 This project is start point to imlement same feature for your application in older versions
 - Minimum API is 24
