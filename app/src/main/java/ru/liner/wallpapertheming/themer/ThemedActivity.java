@@ -29,6 +29,7 @@ import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -123,6 +124,11 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
                     iterateViews((ViewGroup) child, accentColor, accentDarkColor, backgroundColor);
                 }
                 ((IThemer) child).applyColors(accentColor, accentDarkColor, backgroundColor);
+            } else if (child instanceof RecyclerView) {
+                for (int v = 0; v < ((RecyclerView) child).getChildCount(); v++) {
+                    RecyclerView.ViewHolder holder = ((RecyclerView) child).getChildViewHolder(((RecyclerView) child).getChildAt(v));
+                    iterateViews((ViewGroup) holder.itemView, accentColor, accentDarkColor, backgroundColor);
+                }
             } else if (child instanceof ViewGroup) {
                 iterateViews((ViewGroup) child, accentColor, accentDarkColor, backgroundColor);
             } else if (themeConfig.isChangeAndroidViews()) {
@@ -191,7 +197,7 @@ public abstract class ThemedActivity extends AppCompatActivity implements Device
                     if (themeConfig.isChangeTextColor())
                         ((Button) child).setTextColor(ColorUtils.isColorDark(accentColor) ? Color.WHITE : Color.BLACK);
                 } else if (child instanceof TextView) {
-                    if(!themeConfig.isChangeTextColor())
+                    if (!themeConfig.isChangeTextColor())
                         continue;
                     ((TextView) child).setTextColor(ColorUtils.isColorDark(accentColor) ? Color.WHITE : Color.BLACK);
                     ((TextView) child).setHighlightColor(accentColor);
